@@ -79,7 +79,10 @@ def undo_vip():
   else:
     return f"No actions to undo."
   
-  
+@app.route('/api/v1/vips', methods=['GET'])
+@cross_origin()
+def get_active_vips():
+  return data.list_manager.get_active_vips_string()
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()

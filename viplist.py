@@ -83,6 +83,9 @@ class VipListManager:
   def get_newest_unvip(self) -> VIP:
     return sorted(self.previous_vips, key = lambda x: x.date_added, reverse = True)[0]
   
+  def get_active_vips_string(self) -> str:
+    return ", ".join([f'@{self.__get_user_login(x)}' for x in self.active_vips])
+  
   def add_vip(self, new_vip : str):
     try:
       user_id = self.twitch_api.get_user_id(new_vip)
