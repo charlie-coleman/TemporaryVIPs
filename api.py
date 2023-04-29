@@ -11,6 +11,7 @@ from viplist import *
 
 class DataStore():
   list_manager : VipListManager = None
+  key : str = ""
 
 data = DataStore()
 
@@ -26,6 +27,13 @@ def set_limit():
   
   if 'limit' not in flask.request.args:
     return "Missing limit. Try \"!limit <N>\" where <N> is a number."
+  
+  if 'key' not in flask.request.args:
+    return "Missing secret key. Ignoring request."
+  
+  key = flask.request.args['key']
+  if key != data.key:
+    return "Invalid key."
   
   try:
     limit = int(flask.request.args['limit'])
@@ -44,6 +52,13 @@ def add_vip():
   
   if 'user' not in flask.request.args:
     return "Missing the username you intend to VIP."
+  
+  if 'key' not in flask.request.args:
+    return "Missing secret key. Ignoring request."
+  
+  key = flask.request.args['key']
+  if key != data.key:
+    return "Invalid key."
   
   new_vip = flask.request.args['user']
   
@@ -68,6 +83,13 @@ def add_vip():
 def undo_vip():
   if 'Nightbot-Response-Url' not in flask.request.headers:
     return "Command must be sent by NightBot!"
+  
+  if 'key' not in flask.request.args:
+    return "Missing secret key. Ignoring request."
+  
+  key = flask.request.args['key']
+  if key != data.key:
+    return "Invalid key."
   
   return_code, return_vip, remove_vip = data.list_manager.undo()
   
@@ -95,5 +117,6 @@ if __name__ == '__main__':
   with open(args.secrets) as cred_file:
     cred_data = json.load(cred_file)
     data.list_manager = VipListManager(TwitchAPI(cred_data["TWITCH"]))
+    data.key = cred_data['KEY']
 
   app.run(host=args.host, port=args.port, debug=True)
