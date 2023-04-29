@@ -60,7 +60,7 @@ def add_vip():
     elif return_code == -2:
       return f"@{new_vip} is already a VIP!"
     else:
-      return f"Unknown error. Unable to VIP {new_vip}."
+      return f"Unknown error. Unable to VIP @{new_vip}."
   
 
 @app.route('/api/v1/undo', methods=['GET'])
@@ -72,9 +72,9 @@ def undo_vip():
   return_code, return_vip, remove_vip = data.list_manager.undo()
   
   if return_code == 1:
-    msg = f"To undo the last VIP added, unvip {remove_vip} "
+    msg = f"To undo the last VIP added, unvip @{remove_vip} "
     if return_vip:
-      msg += f"and vip {return_vip}."
+      msg += f"and vip @{return_vip}."
     return msg
   else:
     return f"No actions to undo."
