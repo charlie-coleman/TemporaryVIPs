@@ -36,13 +36,18 @@ def set_limit():
     return "Invalid key."
   
   try:
-    limit = int(flask.request.args['limit'])
+    removals = limit = int(flask.request.args['limit'])
   except:
     return "Input could not be converted to a number. Try \"!limit <N>\" where <N> is a number."
   
   data.list_manager.set_limit(limit)
   
-  return f"Limit set to {limit} VIPs."
+  msg = f"Limit set to {limit} VIPs. "
+  if len(removals) > 0:
+    not_vips = ', '.join([f'@{x}' for x in removals])
+    msg += f'{not_vips} are no longer VIPs.'
+  
+  return msg
 
 @app.route('/api/v1/add', methods=['GET'])
 @cross_origin()

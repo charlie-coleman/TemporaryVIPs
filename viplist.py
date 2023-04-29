@@ -70,9 +70,17 @@ class VipListManager:
     user_info = self.twitch_api.get_user_info(vip.user_id)
     return user_info['login']
     
-  def set_limit(self, limit : int):
+  def set_limit(self, limit : int) -> list:
     self.limit = limit
     self.save_info()
+    
+    remove_vips = []
+    while len(self.active_vips) > self.limit:
+      oldest_vip = self.get_oldest_vip()
+      remove_vips.append(self.__get_user_login(oldest_vip))
+      self.active_vips.remove(oldest_vip)
+      
+    return remove_vips
   
   def get_oldest_vip(self) -> VIP:
     return sorted(self.active_vips, key = lambda x: x.date_added, reverse = False)[0]
