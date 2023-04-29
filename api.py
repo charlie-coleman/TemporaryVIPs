@@ -45,15 +45,15 @@ def add_vip():
   if 'user' not in flask.request.args:
     return "Missing the username you intend to VIP."
   
-  base_response_url = flask.request.headers['Nightbot-Response-Url']
   new_vip = flask.request.args['user']
   
   (return_code, remove_vip) = data.list_manager.add_vip(new_vip)
   
   if return_code == 1:
+    msg = f"Congrats @{new_vip} on becoming a VIP. "
     if remove_vip: 
-      resp1 = requests.post(url = base_response_url, json = {'message': f'/unvip {remove_vip}'})
-    return f"/vip {new_vip}"
+      msg += f"@{remove_vip} is no longer a VIP."
+    return msg
   else:
     if return_code == -1:
       return f"Failed to find user \"{new_vip}\"."
@@ -69,15 +69,13 @@ def undo_vip():
   if 'Nightbot-Response-Url' not in flask.request.headers:
     return "Command must be sent by NightBot!"
   
-  base_response_url = flask.request.headers['Nightbot-Response-Url']
-  
   return_code, return_vip, remove_vip = data.list_manager.undo()
   
   if return_code == 1:
+    msg = f"To undo the last VIP added, unvip {remove_vip} "
     if return_vip:
-      resp1 = requests.post(url = base_response_url, json = {'message': f'/vip {return_vip}'})
-      print(f'/vip {return_vip}')
-    return f"/unvip {remove_vip}"
+      msg += f"and vip {return_vip}."
+    return msg
   else:
     return f"No actions to undo."
   
