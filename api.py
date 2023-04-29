@@ -32,6 +32,9 @@ def set_limit():
   except:
     return "Input could not be converted to a number. Try \"!limit <N>\" where <N> is a number."
   
+  data.list_manager.set_limit(limit)
+  
+  return f"Limit set to {limit} VIPs."
 
 @app.route('/api/v1/add', methods=['GET'])
 @cross_origin()
@@ -45,12 +48,20 @@ def add_vip():
   base_response_url = flask.request.headers['Nightbot-Response-Url']
   new_vip = flask.request.args['user']
   
-  remove_vip = data.list_manager.add_vip(new_vip)
+  (return_code, remove_vip) = data.list_manager.add_vip(new_vip)
   
-  if remove_vip:
-    resp1 = requests.post(url = base_response_url, json = {'message': f'/unvip {remove_vip}'})
+  if return_code == 1:
+    if remove_vip: 
+      resp1 = requests.post(url = base_response_url, json = {'message': f'/unvip {remove_vip}'})
+    return f"/vip {new_vip}"
+  else:
+    if return_code == -1:
+      return f"Failed to find user \"{new_vip}\"."
+    elif return_code == -2:
+      return f"@{new_vip} is already a VIP!"
+    else:
+      return f"Unknown error. Unable to VIP {new_vip}."
   
-  return f"/vip {new_vip}"
 
 @app.route('/api/v1/undo', methods=['GET'])
 @cross_origin()
@@ -60,12 +71,15 @@ def undo_vip():
   
   base_response_url = flask.request.headers['Nightbot-Response-Url']
   
-  return_vip, remove_vip = data.list_manager.undo()
+  return_code, return_vip, remove_vip = data.list_manager.undo()
   
-  if return_vip:
-    resp1 = requests.post(url = base_response_url, json = {'message': f'/vip {return_vip}'})
-    
-  return f"/vip {remove_vip}"
+  if return_code == 1:
+    if return_vip:
+      resp1 = requests.post(url = base_response_url, json = {'message': f'/vip {return_vip}'})
+      print(f'/vip {return_vip}')
+    return f"/unvip {remove_vip}"
+  else:
+    return f"No actions to undo."
   
   
 
