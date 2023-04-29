@@ -130,7 +130,7 @@ class VipListManager:
     
       print(f'Undoing last add VIP. Returning VIP to "{newest_unvip.username}" and removing VIP from "{newest_vip.username}".')
       
-      return (0, self.__get_user_login(newest_unvip), self.__get_user_login(newest_vip))
+      return (1, self.__get_user_login(newest_unvip), self.__get_user_login(newest_vip))
     
     else:
       print(f'Removing the VIP from "{newest_vip.username}"')
